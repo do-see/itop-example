@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  db:
+    platform: linux/x86_64
+    image: mysql:latest
+    expose:
+      - "3306:3306"
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_DATABASE: 'itop'
+
+  itop:
+    image: vbkunin/itop:latest-base
+    restart: unless-stopped
+    stdin_open: true
+    environment:
+      - ITOP_DB_HOST=db
+      - ITOP_DB_NAME=itop
+      - ITOP_DB_USER=root
+      - ITOP_DB_PASS=
+    ports:
+      - "8080:80"
+    volumes:
+      - ./itop-data/conf:/var/www/html/conf
+      - ./itop-data/data:/var/www/html/data
+      - ./itop-data/log:/var/www/html/log
+      - ./itop-data/env-production:/var/www/html/env-production
+
